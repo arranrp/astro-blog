@@ -1,0 +1,37 @@
+---
+import { MarkdownHeading } from 'astro';
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+const grouppedHeadings = headings.reduce((arr, heading) => {
+  if (heading.depth === 2) {
+    arr.push({ ...heading, subheadings: [] });
+  } else {
+    arr.at(-1).subheadings.push(heading);
+  }
+
+  return arr;
+}, []);
+---
+
+<ol>
+  {
+    grouppedHeadings.map((h) => (
+      <li>
+        <a href={`#${h.slug}`}>{h.text}</a>
+        {h.subheadings.length > 0 && (
+          <ol>
+            {h.subheadings.map((sub) => (
+              <li>
+                <a href={`#${sub.slug}`}>{sub.text}</a>
+              </li>
+            ))}
+          </ol>
+        )}
+      </li>
+    ))
+  }
+</ol>
